@@ -13,7 +13,7 @@ Welcome to the wonderful world of Othello. This repository should contain a work
   - From the designated tile of your choice inside of any game state, run 'myPlugin' for WebGME use or use 'ReactOthello' for the visualizer.
 
 **Implementation:**
-Inside of our plugin, we have 6 functions:
+Inside of our plugin, we have 6 functions
   - main(self)
     - Inside of this function, we run all of our other functions. It starts by instantiating the board and setting up the overall structure.
   - show_states(self)
