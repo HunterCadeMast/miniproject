@@ -320,5 +320,3 @@ class myPlugin(PluginBase):
     logger.warning(self.highlight)
     next_move_viable(self)
     make_new_state(self)
-    ai_move(self)
-    make_new_state(self)
