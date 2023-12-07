@@ -1,0 +1,29 @@
+{
+  "components": {
+    "plugins": {
+      "myPlugin": {
+        "src": "src/plugins/myPlugin",
+        "test": "test/plugins/myPlugin"
+      }
+    },
+    "seeds": {
+      "Othello": {
+        "src": "src/seeds/Othello"
+      }
+    },
+    "visualizers": {
+      "ReactOthello": {
+        "src": "panels/ReactOthello/ReactOthelloPanel",
+        "title": "ReactOthello",
+        "panel": "src/visualizers/panels/ReactOthello",
+        "secondary": false,
+        "widget": "src/visualizers/widgets/ReactOthello"
+      }
+    }
+  },
+  "dependencies": {
+    "plugins": {},
+    "seeds": {},
+    "visualizers": {}
+  }
+}

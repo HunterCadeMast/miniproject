@@ -1,0 +1,8 @@
+[
+  {
+    "id": "ReactOthello",
+    "title": "ReactOthello",
+    "panel": "panels/ReactOthello/ReactOthelloPanel",
+    "DEBUG_ONLY": false
+  }
+]
