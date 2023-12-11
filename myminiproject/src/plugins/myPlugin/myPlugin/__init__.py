@@ -2,9 +2,6 @@
 This is where the implementation of the plugin code goes.
 The myPlugin-class is imported from both run_plugin.py and run_debug.py
 """
-# USE TAMAS' VISUALIZER AND EDIT IT
-# FIGURE OUT META
-# SET ACTIVE NODE TO NEW STATE
 import sys
 import logging
 import random
@@ -29,46 +26,48 @@ class myPlugin(PluginBase):
     logger.info('name: {0}'.format(core.get_attribute(active_node, 'name')))
     logger.warn('pos : {0}'.format(core.get_registry(active_node, 'position')))
     logger.error('guid: {0}'.format(core.get_guid(active_node)))
-    nodesList = core.load_sub_tree(core.get_parent(core.get_parent(core.get_parent(active_node))))
-    nodes = {}
-    for node in nodesList:
-      nodes[core.get_path(node)] = node
-    self.nodes = nodes
+
     states = []
-    for path in nodes:
-      node = nodes[path]
-      name = core.get_attribute(node, 'name')
-      if (core.is_instance_of(node, META['GameState'])):
-        currentMove= nodes[core.get_pointer_path(node, "currentMove")]
-        currentMoveColor = core.get_attribute(currentMove,'color')
-        currentMoveTile = core.get_parent(currentMove)
-        currentMoveTileRow = core.get_attribute(currentMoveTile, 'row')
-        currentMoveTileColumn = core.get_attribute(currentMoveTile, 'column')
-        currentPlayer = core.get_attribute(nodes[core.get_pointer_path(node, "currentPlayer")], 'name')
-        states.append({"path": path, "name": name, "board": [[None for x in range(8)] for x  in range(8)], "currentPlayer" : currentPlayer,
-        "currentMoveColor": currentMoveColor, "currentMoveTileRow": currentMoveTileRow, "currentMoveTileColumn": currentMoveTileColumn}) 
-      if (core.is_instance_of(node, META['Tile'])):
-        for state in states:
-          if state["path"][:4] == path[:4]:
-            row = core.get_attribute(node, 'row')
-            column = core.get_attribute(node, 'column')
-            children = core.get_children_paths(node)
-            flips = []
-            childColor = None
-            childPath = None
-            if len(children) > 0:
-              childPath = children[0]
-              childColor = core.get_attribute(nodes[childPath], 'color')
-              for path2 in nodes:
-                node2 = nodes[path2]
-                if (core.is_instance_of(node2, META['mightFlip'])):
-                  srcTile = core.get_parent(nodes[core.get_pointer_path(node2, 'src')])
-                  dstTile = core.get_parent(nodes[core.get_pointer_path(node2, 'dst')])
-                  srcInfo = {'column': core.get_attribute(srcTile, 'column'), 'row':core.get_attribute(srcTile,'row')}
-                  dstInfo = {'column': core.get_attribute(dstTile, 'column'), 'row':core.get_attribute(dstTile,'row')}
-                  if node == srcTile:
-                    flips.append(dstInfo)                           
-            state["board"][row][column] = {"color": childColor, "flips": flips}
+    def set_board(self):
+      nodesList = core.load_sub_tree(core.get_parent(core.get_parent(core.get_parent(active_node))))
+      nodes = {}
+      for node in nodesList:
+        nodes[core.get_path(node)] = node
+      self.nodes = nodes
+      for path in nodes:
+        node = nodes[path]
+        name = core.get_attribute(node, 'name')
+        if (core.is_instance_of(node, META['GameState'])):
+          currentMove= nodes[core.get_pointer_path(node, "currentMove")]
+          currentMoveColor = core.get_attribute(currentMove,'color')
+          currentMoveTile = core.get_parent(currentMove)
+          currentMoveTileRow = core.get_attribute(currentMoveTile, 'row')
+          currentMoveTileColumn = core.get_attribute(currentMoveTile, 'column')
+          currentPlayer = core.get_attribute(nodes[core.get_pointer_path(node, "currentPlayer")], 'name')
+          states.append({"path": path, "name": name, "board": [[None for x in range(8)] for x  in range(8)], "currentPlayer" : currentPlayer,
+          "currentMoveColor": currentMoveColor, "currentMoveTileRow": currentMoveTileRow, "currentMoveTileColumn": currentMoveTileColumn}) 
+        if (core.is_instance_of(node, META['Tile'])):
+          for state in states:
+            if state["path"][:4] == path[:4]:
+              row = core.get_attribute(node, 'row')
+              column = core.get_attribute(node, 'column')
+              children = core.get_children_paths(node)
+              flips = []
+              childColor = None
+              childPath = None
+              if len(children) > 0:
+                childPath = children[0]
+                childColor = core.get_attribute(nodes[childPath], 'color')
+                for path2 in nodes:
+                  node2 = nodes[path2]
+                  if (core.is_instance_of(node2, META['mightFlip'])):
+                    srcTile = core.get_parent(nodes[core.get_pointer_path(node2, 'src')])
+                    dstTile = core.get_parent(nodes[core.get_pointer_path(node2, 'dst')])
+                    srcInfo = {'column': core.get_attribute(srcTile, 'column'), 'row':core.get_attribute(srcTile,'row')}
+                    dstInfo = {'column': core.get_attribute(dstTile, 'column'), 'row':core.get_attribute(dstTile,'row')}
+                    if node == srcTile:
+                      flips.append(dstInfo)                           
+              state["board"][row][column] = {"color": childColor, "flips": flips}
 
     def show_states(self):
       for state in self.states:
@@ -88,7 +87,6 @@ class myPlugin(PluginBase):
         boardString +="]\n]"
         stateString += boardString
 
-
     def next_move_viable(self):
       self.valid = False
       self.to_flip = []
@@ -96,6 +94,11 @@ class myPlugin(PluginBase):
       flip_directions = [(0,1), (1,0), (1,1), (-1,-1), (1,-1), (-1,1), (-1,0), (0,-1)]
       logger = self.logger
       core = self.core
+      nodesList = core.load_sub_tree(core.get_parent(core.get_parent(core.get_parent(active_node))))
+      nodes = {}
+      for node in nodesList:
+        nodes[core.get_path(node)] = node
+      self.nodes = nodes
       current_node = self.active_node
       board = core.get_parent(current_node)
       gamestate = core.get_parent(board)
@@ -125,6 +128,7 @@ class myPlugin(PluginBase):
                   multiplier +=1
       return
 
+    # Highlights moves.
     def highlight_move(self, row, column):
       self.valid = False
       self.to_flip = []
@@ -132,11 +136,15 @@ class myPlugin(PluginBase):
       flip_directions = [(0,1), (1,0), (1,1), (-1,-1), (1,-1), (-1,1), (-1,0), (0,-1)]
       logger = self.logger
       core = self.core
+      nodesList = core.load_sub_tree(core.get_parent(core.get_parent(core.get_parent(active_node))))
+      nodes = {}
+      for node in nodesList:
+        nodes[core.get_path(node)] = node
       current_node = self.active_node
       board = core.get_parent(current_node)
       gamestate = core.get_parent(board)
-      current_move = self.nodes[core.get_pointer_path(gamestate, "currentMove")]
-      current_move_color = core.get_attribute(current_move, 'color')
+      current_player = nodes[core.get_pointer_path(gamestate, "currentPlayer")]
+      current_move_color = core.get_attribute(current_player, 'color')
       next_move_color = self.next_moves[current_move_color]
       self.next_move_color = next_move_color
       state_path = gamestate["nodePath"]
@@ -169,7 +177,11 @@ class myPlugin(PluginBase):
       core = self.core
       logger = self.logger
       META = self.META
-      nodes = self.nodes
+      nodesList = core.load_sub_tree(core.get_parent(core.get_parent(core.get_parent(active_node))))
+      nodes = {}
+      for node in nodesList:
+        nodes[core.get_path(node)] = node
+      self.nodes = nodes
       logger.info(self.to_flip)
       parent_state = core.get_parent(core.get_parent(active_node))
       game_folder = core.get_parent(parent_state)
@@ -188,7 +200,7 @@ class myPlugin(PluginBase):
         new_name = parent_name[:number_index] + f"{state_number}"
       except:
         pass
-      copied_node = core.copy_node(parent_state,game_folder)
+      copied_node = core.copy_node(parent_state, game_folder)
       core.set_attribute(copied_node, 'name', new_name)
       child_paths = core.get_children_paths(copied_node)
       old_player = core.get_pointer_path(copied_node, "currentPlayer")
@@ -230,7 +242,15 @@ class myPlugin(PluginBase):
       logger.warning(black_count)
       logger.warning("White Pieces:")
       logger.warning(white_count)
-      self.active_node = self.copied_node
+      copied_board_paths = core.get_children_paths(copied_node)
+      for board_child in copied_board_paths:
+          copied_board = core.load_by_path(self.root_node, board_child)
+          if core.is_instance_of(copied_board, META["Board"]):
+            copied_tile_paths = core.get_children_paths(copied_board)
+            for tile_child in copied_tile_paths:
+              copied_tile = core.load_by_path(self.root_node, tile_child)
+              if core.is_instance_of(copied_tile, META["Tile"]):
+                self.active_node = copied_tile
       self.util.save(self.root_node, self.commit_hash, self.branch_name)
 
     # Undo last action (Is not currently being called)
@@ -249,66 +269,45 @@ class myPlugin(PluginBase):
       else:
         core.delete_node(parent_state)
         logger.info(f"Undo: Reverted to previous game state")
+      # SHOULD CHANGE GAMESTATE BACK TO PREVIOUS INSTEAD OF JUST DELETING, BUT WAS NOT ABLE TO FIGURE OUT LOGIC TO IT
       self.util.save(self.root_node, self.commit_hash, self.branch_name)
       
     # Have the computer make a move
     def ai_move(self):
       import re
-      core = self.core
-      logger = self.logger
-      META = self.META
-      nodes = self.nodes
-      current_state = None
-      for path, node in nodes.items():
-          if core.is_instance_of(node, META['GameState']):
-              current_state = node
-              break
-      if current_state is None:
-          logger.error("Unable to find the current game state.")
-          return    
-      best_tile = None
-      best_flips = -1
-      for row, column in empty_tiles:
-          self.valid = False
-          self.to_flip = []
-          self.next_moves = {"black": "white", "white": "black"}
-          flip_directions = [(0, 1), (1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1), (-1, 0), (0, -1)]
-          current_node = self.active_node
-          board = core.get_parent(current_node)
-          gamestate = core.get_parent(board)
-          current_move = nodes[core.get_pointer_path(gamestate, "currentMove")]
-          current_move_color = core.get_attribute(current_move, 'color')
-          next_move_color = self.next_moves[current_move_color]
-          self.next_move_color = next_move_color
-          state_path = gamestate["nodePath"]
-          for state in self.states:
-            if state_path == state['path']:
-              board_ref = state['board']
-              column = core.get_attribute(current_node, 'column')
-              row = core.get_attribute(current_node, 'row')
-              if board_ref[row][column]['color'] == None:
-                for direction in flip_directions:
-                  to_flip = []
-                  if board_ref[row + direction[0]][column + direction[1]]['color'] == next_move_color:
-                    to_flip = [(row + direction[0], column + direction[1])]
-                    multiplier = 2
-                    while (row + (direction[0]*multiplier) > 0 and row + (direction[0]*multiplier) < 8) and (column + (direction[1]*multiplier) > 0 and column + (direction[1]*multiplier) < 8):
-                      if board_ref[row + direction[0]*multiplier][column + (direction[1]*multiplier)]['color'] == next_move_color:
-                        end_position = (row + direction[0]*multiplier, column + (direction[1]*multiplier))
-                        for position in to_flip:
-                          self.to_flip.append(position)
-                        self.valid = True
-                      to_flip.append((row + direction[0]*multiplier, column + (direction[1]*multiplier)))
-                      multiplier +=1
-          if self.valid and len(self.to_flip) > best_flips:
-              best_flips = len(self.to_flip)
-              best_tile = (row, column)
-      if best_tile is not None:
-          row, column = best_tile
-          logger.info(f"AI's move: Placed a piece of color {current_move_color} to Tile_{row}_{column}")
-      else:
-          logger.warning("AI failed to find a valid move.")
-      
+      nodesList = core.load_sub_tree(core.get_parent(core.get_parent(core.get_parent(active_node))))
+      nodes = {}
+      for node in nodesList:
+        nodes[core.get_path(node)] = node
+      self.nodes = nodes
+      self.states = states
+      self.highlight = []
+      for row in range(7):
+        for column in range(7):
+          highlight_move(self, row, column)
+          if self.valid:
+            self.highlight.append({'row': row, "column": column})                  
+      logger.warning("AI HIGHLIGHTS:")
+      logger.warning(self.highlight)
+      if not self.highlight:
+          self.logger.info("AI has no valid moves.")
+          return
+      move = random.choice(self.highlight)
+      row = move['row']
+      column = move['column']
+      current_node = self.active_node
+      board = core.get_parent(current_node)
+      gamestate = core.get_parent(board)
+      current_move = nodes[core.get_pointer_path(gamestate, "currentMove")]
+      current_move_color = core.get_attribute(current_move, 'color')
+      next_move_color = self.next_moves[current_move_color]
+      self.next_move_color = next_move_color
+      logger.warning(current_move)
+      core.set_attribute(current_move, 'row', row)
+      core.set_attribute(current_move, 'column', column)
+      # SHOULD WORK IF LOGIC IS ADDED TO CHANGE GAME STATE TO THE NEW ONE
+
+    set_board(self)
     self.states = states
     self.highlight = []
     for row in range(7):
@@ -319,4 +318,8 @@ class myPlugin(PluginBase):
     logger.warning("Here are the highlighted/valid moves the current player can make:")
     logger.warning(self.highlight)
     next_move_viable(self)
+    make_new_state(self)
+    set_board(self)
+    self.states = states
+    ai_move(self)
     make_new_state(self)
