@@ -5,9 +5,9 @@
 Welcome to the wonderful world of Othello. This repository should contain a working model of a game of Othello. From WebGME, it should run as expected. However, the visualizer is set up with some issues making it not work correctly in WebGME. Any questions feel free to reach out!
 
 **Issues:**
-There were a couple of issues that I ran into and I think were very close to being fixed, but I never was fully able to. One was getting the visualizer to fully work. It shows on WebGME but does not run at all. Seems to show an issue with the logger and tried to fix it, but was not successful. Most of the logic for it is change. There were a few that I was not able to implement fully as I did not have the ability to see what I was changing.
+There were a couple of issues that I ran into and I think were very close to being fixed, but I never was fully able to. One was getting the visualizer to fully work. It shows on WebGME but does not run at all. Seems to show an issue with the logger and tried to fix it, but was not successful. Most of the logic for it is change. There were a few that I was not able to implement fully as I could not see what I was changing. I did add the logic into the visualizer for these features though.
 
-The second issue was with the AUTO function and the UNDO function. Those both should fully be implemented, as is highlighting and all the other additions, but I could not figure out how to change the current game state while the plugin is running. I attempted to, but it did not fully fix that though. If this is added, then the rest should work correctly.
+The second issue was with the AUTO function and the UNDO function. Those both should fully be implemented into the plugin, as is highlighting and all the other additions, but I could not figure out how to change the current game state while the plugin is running. I attempted to, but it did not fully fix that though. If this is added, then the rest should work correctly.
 
 **Installation and Usage:**
   - Download the repository locally.
