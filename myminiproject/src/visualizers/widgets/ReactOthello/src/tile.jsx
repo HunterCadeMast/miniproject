@@ -50,7 +50,9 @@ export default function Tile({player, piece, position, win}) {
                     }
                 }
         }
-
+        if (isValidMove(position)) {
+            style.border = '2px solid yellow';
+          }
         if(myIcon !== null) {
             return (<FontAwesomeIcon style={style} icon={myIcon} size='xl'/>); 
         }
@@ -76,6 +78,9 @@ export default function Tile({player, piece, position, win}) {
                     style.opacity = 0.75;
                 }
             }
+            if (isValidMove(position)) {
+                style.backgroundColor = '#76c7c0'; // Change the background color for valid moves
+              }
             return (<div onClick={onTileClick} 
                 style={style}
                 onMouseEnter={onMouseEnter}

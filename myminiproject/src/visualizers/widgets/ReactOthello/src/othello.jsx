@@ -28,10 +28,24 @@ export default function Othello({player, win, board}) {
             }
         }
     }
-    return (
-    <div style={{ width: '100%', height: '100%', fontFamily:'fantasy', fontSize:'36px', fontWeight:'bold'}}>
-        {getLabel()}
-        <Board player={player} board={board} win={win}/>
-    </div>
-    );
+    const countPieces = (color) => {
+        return board.reduce((count, piece) => {
+          return piece === color ? count + 1 : count;
+        }, 0);
+      }
+      const onUndo = () => {
+        if (step > 0) {
+          setStep(step - 1);
+        }
+      };    
+      return (
+        <div style={{ width: '100%', height: '100%', fontFamily: 'fantasy', fontSize: '36px', fontWeight: 'bold' }}>
+          {getLabel()}
+          <Board player={player} board={board} win={win} />
+          <div>
+            Black Pieces: {countPieces(CONSTANTS.PIECE.BLACK)} | White Pieces: {countPieces(CONSTANTS.PIECE.WHITE)}
+          </div>
+          <button onClick={onUndo}>Undo</button>
+        </div>
+      );
 }
